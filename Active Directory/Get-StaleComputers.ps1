@@ -55,20 +55,17 @@ If($Scope -eq "Report")
 Else($Scope -eq "Production")
 	{
 		ForEach ($Computer in $Computers) 
-		{
-
-		$ComputerLocation = Get-ADComputer $Computer | Select @{Name="OU";Expression={$_.DistinguishedName -replace "CN=$($Computer.Name),",""}}
-	
+		{	
 			{ 			
-					try 
-						{
-							Set-ADComputer -Identity $Computer -Description "Disabled on $Date for inactivity."
-							Set-ADComputer -Identity $Computer -Replace @{Comment="$($ComputerLocation.OU)"}
-							Disable-ADAccount -Identity $Computer
-							Move-ADObject -Identity $Computer -TargetPath "$ArchiveOU" -Verbose
-						}
-					Catch 
-						{
-							$_ | Out-File  "$LogPath\Report_$(Get-Date -Format ddmmyyyy).log"
+				try 
+					{
+						Set-ADComputer -Identity $Computer -Description "Disabled on $Date for inactivity."
+						Set-ADComputer -Identity $Computer -Replace @{Comment="$($ComputerLocation.OU)"}
+						Disable-ADAccount -Identity $Computer
+						Move-ADObject -Identity $Computer -TargetPath "$ArchiveOU" -Verbose
+					}
+				Catch 
+					{
+						$_ | Out-File  "$LogPath\Report_$(Get-Date -Format ddmmyyyy).log"
 						}
 	}
